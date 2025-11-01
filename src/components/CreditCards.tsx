@@ -49,7 +49,7 @@ const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateM
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="min-w-[12ch]">
-                    <span className="text-white font-bold text-sm">¥{(card.day10Next || 0).toLocaleString()}</span>
+                    <span className="text-white font-bold text-sm">¥{Math.max(card.day10 || 0, card.day20 || 0, card.day30 || 0, card.day10Next || 0).toLocaleString()}</span>
                   </div>
                   <span className="badge text-white-60">{card.paymentDay === '27' ? '27' : '6'}</span>
                   <button
