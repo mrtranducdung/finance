@@ -75,8 +75,8 @@ const CreditCards = ({
                 className="card-header"
                 onClick={() => setExpandedCard(expandedCard === card.id ? null : card.id)}
               >
-                <div className="flex items-center gap-2 justify-between">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ">
+                  <div className="flex items-center gap-2 w-1/3">
                     <div className={`w-3 h-3 rounded-full flex-shrink-0 ${card.color}`} />
                     <input
                       type="text"
@@ -89,8 +89,8 @@ const CreditCards = ({
                       className="text-white font-semibold text-sm bg-transparent border-none outline-none"
                     />
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="flex items-center gap-1 text-xs">
+                  <div className="flex items-center gap-2, w-2/3">
+                    <div className="flex items-center text-xs gap-2 justify-between, w-full">
                       <span className="text-orange-300">¥{totalFixedSpending.toLocaleString()}</span>
                       <span className="text-white-50">|</span>
                       <span className="text-green-300">¥{monthlySpend.toLocaleString()}</span>
