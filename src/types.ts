@@ -16,7 +16,6 @@ export interface RecurringExpense {
   paymentDay: '27' | '6';
 }
 
-export interface DeleteConfirm {
-  type: 'card' | 'expense';
-  id: number;
+export interface GlobalCardNames {
+  [key: number]: string;
 }

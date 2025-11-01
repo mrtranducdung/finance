@@ -1,6 +1,13 @@
 import { TrendingUp, Wallet } from 'lucide-react';
 
-const IncomeBalance = ({ income, setIncome, balance, setBalance }) => {
+interface IncomeBalanceProps {
+  income: number;
+  setIncome: (income: number) => void;
+  balance: number;
+  setBalance: (balance: number) => void;
+}
+
+const IncomeBalance = ({ income, setIncome, balance, setBalance }: IncomeBalanceProps) => {
   return (
     <div className="grid grid-cols-2 gap-3">
       <div className="glass rounded-2xl p-4">

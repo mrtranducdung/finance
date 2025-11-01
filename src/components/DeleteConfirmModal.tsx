@@ -1,4 +1,11 @@
-const DeleteConfirmModal = ({ isOpen, type, onConfirm, onCancel }) => {
+interface DeleteConfirmModalProps {
+  isOpen: boolean;
+  type: 'card' | 'expense' | null;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const DeleteConfirmModal = ({ isOpen, type, onConfirm, onCancel }: DeleteConfirmModalProps) => {
   if (!isOpen) return null;
 
   return (

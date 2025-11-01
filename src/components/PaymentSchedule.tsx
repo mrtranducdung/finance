@@ -1,6 +1,11 @@
 import { Calendar } from 'lucide-react';
 
-const PaymentSchedule = ({ paymentDue27, paymentDue6 }) => {
+interface PaymentScheduleProps {
+  paymentDue27: number;
+  paymentDue6: number;
+}
+
+const PaymentSchedule = ({ paymentDue27, paymentDue6 }: PaymentScheduleProps) => {
   return (
     <div className="glass rounded-2xl p-4">
       <h2 className="text-white font-semibold mb-3 flex items-center gap-2">

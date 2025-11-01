@@ -1,4 +1,11 @@
-const Header = ({ currentMonth, setCurrentMonth, onExport, onImport }) => {
+interface HeaderProps {
+  currentMonth: string;
+  setCurrentMonth: (month: string) => void;
+  onExport: () => void;
+  onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const Header = ({ currentMonth, setCurrentMonth, onExport, onImport }: HeaderProps) => {
   return (
     <div className="text-center py-6">
       <h1 className="text-3xl font-bold text-white mb-2">Finance Tracker</h1>
@@ -15,7 +22,12 @@ const Header = ({ currentMonth, setCurrentMonth, onExport, onImport }) => {
         </button>
         <label className="btn btn-import text-sm cursor-pointer">
           📤 Khôi phục dữ liệu
-          <input type="file" accept=".json" onChange={onImport} />
+          <input 
+            type="file" 
+            accept=".json" 
+            onChange={onImport} 
+            className="hidden"
+          />
         </label>
       </div>
     </div>

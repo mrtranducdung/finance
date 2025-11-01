@@ -1,6 +1,14 @@
 import { BarChart3 } from 'lucide-react';
 
-const TotalExpenses = ({ sumDay10, sumDay20, sumDay30, sumDay10Next, totalRecurring }) => {
+interface TotalExpensesProps {
+  sumDay10: number;
+  sumDay20: number;
+  sumDay30: number;
+  sumDay10Next: number;
+  totalRecurring: number;
+}
+
+const TotalExpenses = ({ sumDay10, sumDay20, sumDay30, sumDay10Next, totalRecurring }: TotalExpensesProps) => {
   const milestones = [
     { label: '10th', cardSum: sumDay10 },
     { label: '20th', cardSum: sumDay20 },

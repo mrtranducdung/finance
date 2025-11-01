@@ -1,6 +1,14 @@
 import { Repeat, Plus, Trash2 } from 'lucide-react';
+import type { RecurringExpense } from '../types';
 
-const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }) => {
+interface RecurringExpensesProps {
+  expenses: RecurringExpense[];
+  onUpdate: (id: number, field: keyof RecurringExpense, value: string | number) => void;
+  onDelete: (id: number) => void;
+  onAdd: () => void;
+}
+
+const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }: RecurringExpensesProps) => {
   return (
     <div className="glass rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
@@ -45,7 +53,7 @@ const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }) => {
                 <input
                   type="number"
                   value={exp.amount || 0}
-                  onChange={(e) => onUpdate(exp.id, 'amount', e.target.value)}
+                  onChange={(e) => onUpdate(exp.id, 'amount', parseFloat(e.target.value) || 0)}
                   className="w-full bg-white-10 text-white text-right px-2 py-1 rounded-lg text-sm border-none outline-none"
                   placeholder="0"
                 />

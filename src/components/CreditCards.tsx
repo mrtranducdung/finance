@@ -1,6 +1,17 @@
 import { CreditCard, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import type { CreditCard as CreditCardType } from '../types';
 
-const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateMilestone, onDelete, onAdd }) => {
+interface CreditCardsProps {
+  cards: CreditCardType[];
+  expandedCard: number | null;
+  setExpandedCard: (id: number | null) => void;
+  onUpdate: (id: number, field: keyof CreditCardType, value: string | number) => void;
+  onUpdateMilestone: (id: number, day: 'day10' | 'day20' | 'day30' | 'day10Next', value: number) => void;
+  onDelete: (id: number) => void;
+  onAdd: () => void;
+}
+
+const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateMilestone, onDelete, onAdd }: CreditCardsProps) => {
   return (
     <div className="glass rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
@@ -62,17 +73,17 @@ const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateM
                 <div className="space-y-1">
                   <div className="text-white-50 text-xs uppercase mb-2">Chi tiêu theo ngày</div>
                   {[
-                    { key: 'day10', label: 'Ngày 10' },
-                    { key: 'day20', label: 'Ngày 20' },
-                    { key: 'day30', label: 'Ngày 30' },
-                    { key: 'day10Next', label: 'Ngày 10 (sau)' },
+                    { key: 'day10' as const, label: 'Ngày 10' },
+                    { key: 'day20' as const, label: 'Ngày 20' },
+                    { key: 'day30' as const, label: 'Ngày 30' },
+                    { key: 'day10Next' as const, label: 'Ngày 10 (sau)' },
                   ].map(({ key, label }) => (
                     <div key={key} className="grid grid-cols-2 gap-2 py-1">
                       <span className="text-white-70 text-sm">{label}</span>
                       <input
                         type="number"
                         value={card[key] || 0}
-                        onChange={(e) => onUpdateMilestone(card.id, key, e.target.value)}
+                        onChange={(e) => onUpdateMilestone(card.id, key, parseFloat(e.target.value) || 0)}
                         className="input-field text-white text-right"
                         placeholder="0"
                       />

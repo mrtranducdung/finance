@@ -7,6 +7,7 @@ import CreditCards from './components/CreditCards';
 import RecurringExpenses from './components/RecurringExpenses';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import { useFinanceData } from './hooks/useFinanceData';
+import type { CreditCard, RecurringExpense } from './types';
 
 function App() {
   const {
@@ -25,8 +26,8 @@ function App() {
     importData
   } = useFinanceData();
 
-  const [expandedCard, setExpandedCard] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'card' | 'expense'; id: number } | null>(null);
 
   // Calculate totals
   const sumDay10 = creditCards.reduce((sum, card) => sum + (card.day10 || 0), 0);
@@ -51,7 +52,7 @@ function App() {
     .reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   // Update handlers
-  const updateCard = (id, field, value) => {
+  const updateCard = (id: number, field: keyof CreditCard, value: string) => {
     setCreditCards(prev => prev.map(card =>
       card.id === id ? { ...card, [field]: value } : card
     ));
@@ -69,36 +70,39 @@ function App() {
     }
   };
 
-  const updateCardMilestone = (id, day, value) => {
+  const updateCardMilestone = (id: number, day: 'day10' | 'day20' | 'day30' | 'day10Next', value: string) => {
     setCreditCards(prev => prev.map(card =>
       card.id === id ? { ...card, [day]: parseFloat(value) || 0 } : card
     ));
   };
 
-  const updateRecurringExpense = (id, field, value) => {
+  const updateRecurringExpense = (id: number, field: keyof RecurringExpense, value: string) => {
     setRecurringExpenses(prev => prev.map(exp =>
       exp.id === id ? { ...exp, [field]: field === 'amount' ? parseFloat(value) || 0 : value } : exp
     ));
   };
 
   const addRecurringExpense = () => {
-    setRecurringExpenses(prev => [...prev, {
+    const newExpense: RecurringExpense = {
       id: Date.now(),
       name: 'New Expense',
       amount: 0,
       paymentDay: '27'
-    }]);
+    };
+    setRecurringExpenses(prev => [...prev, newExpense]);
   };
 
-  const deleteCard = (id) => {
+  const deleteCard = (id: number) => {
     setDeleteConfirm({ type: 'card', id });
   };
 
-  const deleteExpense = (id) => {
+  const deleteExpense = (id: number) => {
     setDeleteConfirm({ type: 'expense', id });
   };
 
   const confirmDelete = () => {
+    if (!deleteConfirm) return;
+    
     if (deleteConfirm.type === 'card') {
       setCreditCards(prev => prev.filter(card => card.id !== deleteConfirm.id));
     } else if (deleteConfirm.type === 'expense') {
@@ -113,7 +117,7 @@ function App() {
 
   const addCard = () => {
     const colors = ['bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-green-500', 'bg-yellow-500', 'bg-red-500', 'bg-indigo-500'];
-    const newCard = {
+    const newCard: CreditCard = {
       id: Date.now(),
       name: `Card ${creditCards.length + 1}`,
       color: colors[creditCards.length % colors.length],

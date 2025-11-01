@@ -147,13 +147,13 @@ export const useFinanceData = () => {
   };
 
   const importData = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = JSON.parse(e.target.result);
+        const data = JSON.parse(e.target?.result);
 
         if (data.monthData) {
           setIncome(data.monthData.income || 0);
