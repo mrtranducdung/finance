@@ -157,43 +157,54 @@ function App() {
           onImport={importData}
         />
 
-        <div className="space-y-4">
-          <IncomeBalance
-            income={income}
-            setIncome={setIncome}
-            balance={balance}
-            setBalance={setBalance}
-          />
+        {/* Thêm khoảng cách rõ ràng với margin bottom cho từng component */}
+        <div className="space-y-0">
+          <div className="mb-8">
+            <IncomeBalance
+              income={income}
+              setIncome={setIncome}
+              balance={balance}
+              setBalance={setBalance}
+            />
+          </div>
 
-          <TotalExpenses
-            sumDay10={sumDay10}
-            sumDay20={sumDay20}
-            sumDay30={sumDay30}
-            sumDay10Next={sumDay10Next}
-            totalRecurring={totalRecurring}
-          />
+          <div className="mb-8">
+            <TotalExpenses
+              sumDay10={sumDay10}
+              sumDay20={sumDay20}
+              sumDay30={sumDay30}
+              sumDay10Next={sumDay10Next}
+              totalRecurring={totalRecurring}
+            />
+          </div>
 
-          <PaymentSchedule
-            paymentDue27={paymentDue27}
-            paymentDue6={paymentDue6}
-          />
+          <div className="mb-8">
+            <PaymentSchedule
+              paymentDue27={paymentDue27}
+              paymentDue6={paymentDue6}
+            />
+          </div>
 
-          <CreditCards
-            cards={creditCards}
-            expandedCard={expandedCard}
-            setExpandedCard={setExpandedCard}
-            onUpdate={updateCard}
-            onUpdateMilestone={updateCardMilestone}
-            onDelete={deleteCard}
-            onAdd={addCard}
-          />
+          <div className="mb-8">
+            <CreditCards
+              cards={creditCards}
+              expandedCard={expandedCard}
+              setExpandedCard={setExpandedCard}
+              onUpdate={updateCard}
+              onUpdateMilestone={updateCardMilestone}
+              onDelete={deleteCard}
+              onAdd={addCard}
+            />
+          </div>
 
-          <RecurringExpenses
-            expenses={recurringExpenses}
-            onUpdate={updateRecurringExpense}
-            onDelete={deleteExpense}
-            onAdd={addRecurringExpense}
-          />
+          <div className="mb-8">
+            <RecurringExpenses
+              expenses={recurringExpenses}
+              onUpdate={updateRecurringExpense}
+              onDelete={deleteExpense}
+              onAdd={addRecurringExpense}
+            />
+          </div>
         </div>
       </div>
     </div>
