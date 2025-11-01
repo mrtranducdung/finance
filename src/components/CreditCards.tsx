@@ -35,7 +35,7 @@ const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateM
             >
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full flex-shrink-0 ${card.color}`} />
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0">
                   <input
                     type="text"
                     value={card.name}
@@ -48,7 +48,9 @@ const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateM
                   />
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-white font-bold text-sm">¥{(card.day10Next || 0).toLocaleString()}</span>
+                  <div className="min-w-[12ch]">
+                    <span className="text-white font-bold text-sm">¥{(card.day10Next || 0).toLocaleString()}</span>
+                  </div>
                   <span className="badge text-white-60">{card.paymentDay === '27' ? '27' : '6'}</span>
                   <button
                     onClick={(e) => {
@@ -82,7 +84,7 @@ const CreditCards = ({ cards, expandedCard, setExpandedCard, onUpdate, onUpdateM
                       <span className="text-white-70 text-sm">{label}</span>
                       <input
                         type="number"
-                        value={card[key] || 0}
+                        value={card[key] === 0 ? '' : card[key]}
                         onChange={(e) => onUpdateMilestone(card.id, key, parseFloat(e.target.value) || 0)}
                         className="input-field text-white text-right"
                         placeholder="0"

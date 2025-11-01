@@ -54,7 +54,7 @@ const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }: RecurringExp
                   type="number"
                   value={exp.amount || 0}
                   onChange={(e) => onUpdate(exp.id, 'amount', parseFloat(e.target.value) || 0)}
-                  className="w-full bg-white-10 text-white text-right px-2 py-1 rounded-lg text-sm border-none outline-none"
+                  className="w-full bg-white-10 text-white text-left px-2 py-1 rounded-lg text-sm border-none outline-none"
                   placeholder="0"
                 />
               </div>
