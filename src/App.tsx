@@ -39,14 +39,14 @@ function App() {
 
   const paymentDue27 = creditCards
     .filter(card => card.paymentDay === '27')
-    .reduce((sum, card) => sum + (card.day10Next || 0), 0) +
+    .reduce((sum, card) => sum + Math.max(card.day10Next || 0, card.day10 || 0, card.day20 || 0, card.day30 || 0), 0) +
     recurringExpenses
     .filter(exp => exp.paymentDay === '27')
     .reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   const paymentDue6 = creditCards
     .filter(card => card.paymentDay === '6')
-    .reduce((sum, card) => sum + (card.day10Next || 0), 0) +
+    .reduce((sum, card) => sum + Math.max(card.day10Next || 0, card.day10 || 0, card.day20 || 0, card.day30 || 0), 0) +
     recurringExpenses
     .filter(exp => exp.paymentDay === '6')
     .reduce((sum, exp) => sum + (exp.amount || 0), 0);
