@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
 const defaultCards = [
-  { id: 1, name: 'Card 1', color: 'bg-blue-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27' },
-  { id: 2, name: 'Card 2', color: 'bg-purple-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27' },
-  { id: 3, name: 'Card 3', color: 'bg-pink-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '6' },
-  { id: 4, name: 'Card 4', color: 'bg-green-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27' },
-  { id: 5, name: 'Card 5', color: 'bg-yellow-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '6' },
-  { id: 6, name: 'Card 6', color: 'bg-red-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27' },
-  { id: 7, name: 'Card 7', color: 'bg-indigo-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '6' },
+  { id: 1, name: 'Card 1', color: 'bg-blue-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27', fixedSpending: [] },
+  { id: 2, name: 'Card 2', color: 'bg-purple-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27', fixedSpending: [] },
+  { id: 3, name: 'Card 3', color: 'bg-pink-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '6', fixedSpending: [] },
+  { id: 4, name: 'Card 4', color: 'bg-green-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27', fixedSpending: [] },
+  { id: 5, name: 'Card 5', color: 'bg-yellow-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '6', fixedSpending: [] },
+  { id: 6, name: 'Card 6', color: 'bg-red-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '27', fixedSpending: [] },
+  { id: 7, name: 'Card 7', color: 'bg-indigo-500', day10: 0, day20: 0, day30: 0, day10Next: 0, paymentDay: '6', fixedSpending: [] },
 ];
 
 const defaultRecurring = [
@@ -19,12 +19,16 @@ const defaultRecurring = [
 const applyGlobalNames = (cards, names) =>
   cards.map(c => ({ ...c, name: names?.[c.id] ?? c.name }));
 
+const applyGlobalFixedSpending = (cards, fixedSpendingMap) =>
+  cards.map(c => ({ ...c, fixedSpending: fixedSpendingMap?.[c.id] ?? [] }));
+
 export const useFinanceData = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().slice(0, 7));
   const [income, setIncome] = useState(0);
   const [balance, setBalance] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [globalCardNames, setGlobalCardNames] = useState({});
+  const [globalFixedSpending, setGlobalFixedSpending] = useState({});
   const [creditCards, setCreditCards] = useState(defaultCards);
   const [recurringExpenses, setRecurringExpenses] = useState([]);
 
@@ -43,6 +47,24 @@ export const useFinanceData = () => {
     } catch (error) {
       const initial = Object.fromEntries(defaultCards.map(c => [c.id, c.name]));
       setGlobalCardNames(initial);
+    }
+  }, []);
+
+  // Load global fixed spending
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('finance-fixed-spending-global');
+      if (saved) {
+        const data = JSON.parse(saved);
+        setGlobalFixedSpending(data.fixedSpending || {});
+      } else {
+        const initial = Object.fromEntries(defaultCards.map(c => [c.id, []]));
+        setGlobalFixedSpending(initial);
+        localStorage.setItem('finance-fixed-spending-global', JSON.stringify({ fixedSpending: initial }));
+      }
+    } catch (error) {
+      const initial = Object.fromEntries(defaultCards.map(c => [c.id, []]));
+      setGlobalFixedSpending(initial);
     }
   }, []);
 
@@ -66,6 +88,8 @@ export const useFinanceData = () => {
 
   // Load month data
   useEffect(() => {
+    if (Object.keys(globalFixedSpending).length === 0) return; // Wait for global data to load
+    
     setIsLoaded(false);
     const key = `finance-${currentMonth}`;
 
@@ -77,35 +101,55 @@ export const useFinanceData = () => {
         setBalance(data.balance || 0);
 
         if (data.creditCards && data.creditCards.length > 0) {
-          setCreditCards(applyGlobalNames(data.creditCards, globalCardNames));
+          let cards = applyGlobalNames(data.creditCards, globalCardNames);
+          cards = applyGlobalFixedSpending(cards, globalFixedSpending);
+          setCreditCards(cards);
         } else {
-          const initialCards = applyGlobalNames(defaultCards, globalCardNames);
+          let initialCards = applyGlobalNames(defaultCards, globalCardNames);
+          initialCards = applyGlobalFixedSpending(initialCards, globalFixedSpending);
           setCreditCards(initialCards);
-          localStorage.setItem(key, JSON.stringify({ income: 0, balance: 0, creditCards: initialCards }));
+          
+          const cardsToSave = initialCards.map(card => {
+            const { fixedSpending, ...rest } = card;
+            return rest;
+          });
+          localStorage.setItem(key, JSON.stringify({ income: 0, balance: 0, creditCards: cardsToSave }));
         }
       } else {
-        const initialCards = applyGlobalNames(defaultCards, globalCardNames);
+        let initialCards = applyGlobalNames(defaultCards, globalCardNames);
+        initialCards = applyGlobalFixedSpending(initialCards, globalFixedSpending);
         setIncome(0);
         setBalance(0);
         setCreditCards(initialCards);
-        localStorage.setItem(key, JSON.stringify({ income: 0, balance: 0, creditCards: initialCards }));
+        
+        const cardsToSave = initialCards.map(card => {
+          const { fixedSpending, ...rest } = card;
+          return rest;
+        });
+        localStorage.setItem(key, JSON.stringify({ income: 0, balance: 0, creditCards: cardsToSave }));
       }
     } catch (error) {
-      const fallbackCards = applyGlobalNames(defaultCards, globalCardNames);
+      let fallbackCards = applyGlobalNames(defaultCards, globalCardNames);
+      fallbackCards = applyGlobalFixedSpending(fallbackCards, globalFixedSpending);
       setIncome(0);
       setBalance(0);
       setCreditCards(fallbackCards);
     }
 
     setIsLoaded(true);
-  }, [currentMonth, globalCardNames]);
+  }, [currentMonth, globalCardNames, globalFixedSpending]);
 
   // Persist month data
   useEffect(() => {
     if (!isLoaded) return;
 
     const key = `finance-${currentMonth}`;
-    const data = { income, balance, creditCards };
+    // Remove fixedSpending before saving (it's stored globally)
+    const cardsToSave = creditCards.map(card => {
+      const { fixedSpending, ...rest } = card;
+      return rest;
+    });
+    const data = { income, balance, creditCards: cardsToSave };
 
     try {
       localStorage.setItem(key, JSON.stringify(data));
@@ -129,7 +173,11 @@ export const useFinanceData = () => {
     const allData = {
       currentMonth,
       monthData: { income, balance, creditCards },
-      globalData: { recurringExpenses, cardNames: globalCardNames },
+      globalData: { 
+        recurringExpenses, 
+        cardNames: globalCardNames,
+        fixedSpending: globalFixedSpending 
+      },
       exportDate: new Date().toISOString()
     };
 
@@ -158,7 +206,9 @@ export const useFinanceData = () => {
         if (data.monthData) {
           setIncome(data.monthData.income || 0);
           setBalance(data.monthData.balance || 0);
-          setCreditCards(applyGlobalNames(data.monthData.creditCards || defaultCards, globalCardNames));
+          let cards = applyGlobalNames(data.monthData.creditCards || defaultCards, globalCardNames);
+          cards = applyGlobalFixedSpending(cards, globalFixedSpending);
+          setCreditCards(cards);
 
           const key = `finance-${currentMonth}`;
           localStorage.setItem(key, JSON.stringify(data.monthData));
@@ -173,6 +223,12 @@ export const useFinanceData = () => {
             setGlobalCardNames(data.globalData.cardNames);
             try {
               localStorage.setItem('finance-cards-global', JSON.stringify({ names: data.globalData.cardNames }));
+            } catch (error) { }
+          }
+          if (data.globalData.fixedSpending) {
+            setGlobalFixedSpending(data.globalData.fixedSpending);
+            try {
+              localStorage.setItem('finance-fixed-spending-global', JSON.stringify({ fixedSpending: data.globalData.fixedSpending }));
             } catch (error) { }
           }
         }
@@ -199,6 +255,8 @@ export const useFinanceData = () => {
     setRecurringExpenses,
     globalCardNames,
     setGlobalCardNames,
+    globalFixedSpending,
+    setGlobalFixedSpending,
     exportData,
     importData
   };

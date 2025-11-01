@@ -22,6 +22,8 @@ function App() {
     recurringExpenses,
     setRecurringExpenses,
     setGlobalCardNames,
+    globalFixedSpending,
+    setGlobalFixedSpending,
     exportData,
     importData
   } = useFinanceData();
@@ -125,7 +127,8 @@ function App() {
       day20: 0,
       day30: 0,
       day10Next: 0,
-      paymentDay: '27'
+      paymentDay: '27',
+      fixedSpending: []
     };
     setCreditCards(prev => [...prev, newCard]);
 
@@ -138,6 +141,46 @@ function App() {
       }
       return next;
     });
+  };
+
+  const onAddFixedSpending = (cardId: number) => {
+    setCreditCards(prev => prev.map(card =>
+      card.id === cardId
+        ? {
+            ...card,
+            fixedSpending: [
+              ...(card.fixedSpending || []),
+              { id: Date.now(), name: '', amount: 0 }
+            ]
+          }
+        : card
+    ));
+  };
+
+  const onUpdateFixedSpending = (cardId: number, spendingId: number, field: 'name' | 'amount', value: string | number) => {
+    setCreditCards(prev => prev.map(card =>
+      card.id === cardId
+        ? {
+            ...card,
+            fixedSpending: (card.fixedSpending || []).map(spending =>
+              spending.id === spendingId
+                ? { ...spending, [field]: value }
+                : spending
+            )
+          }
+        : card
+    ));
+  };
+
+  const onDeleteFixedSpending = (cardId: number, spendingId: number) => {
+    setCreditCards(prev => prev.map(card =>
+      card.id === cardId
+        ? {
+            ...card,
+            fixedSpending: (card.fixedSpending || []).filter(spending => spending.id !== spendingId)
+          }
+        : card
+    ));
   };
 
   return (
@@ -186,6 +229,9 @@ function App() {
             onUpdateMilestone={updateCardMilestone}
             onDelete={deleteCard}
             onAdd={addCard}
+            onAddFixedSpending={onAddFixedSpending}
+            onUpdateFixedSpending={onUpdateFixedSpending}
+            onDeleteFixedSpending={onDeleteFixedSpending}
           />
 
           <RecurringExpenses
