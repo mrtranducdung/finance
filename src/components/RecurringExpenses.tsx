@@ -24,30 +24,32 @@ const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }: RecurringExp
         </button>
       </div>
       <div className="space-y-2">
-        {expenses.map(exp => (
-          <div key={exp.id} className="bg-white-5 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0">
-                <input
-                  type="text"
-                  value={exp.name}
-                  onChange={(e) => onUpdate(exp.id, 'name', e.target.value)}
-                  className="w-full text-white font-semibold text-sm bg-transparent border-none outline-none"
-                  placeholder="Tên khoản chi"
-                />
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-white font-bold text-sm">¥{(exp.amount || 0).toLocaleString()}</span>
-                <span className="badge text-white-60">{exp.paymentDay === '27' ? '27' : '6'}</span>
-                <button
-                  onClick={() => onDelete(exp.id)}
-                  className="text-red-400 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer p-1"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+        {expenses.map((exp, index) => (
+          <div key={exp.id} className={`rounded-lg p-3 ${index % 2 === 0 ? 'bg-gradient-to-r from-blue-500/30 to-purple-500/30' : 'bg-gradient-to-r from-pink-500/30 to-orange-500/30'}`}>
+            <div className="pb-2 border-b border-white-10">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="text"
+                    value={exp.name}
+                    onChange={(e) => onUpdate(exp.id, 'name', e.target.value)}
+                    className="w-full text-white font-semibold text-sm bg-transparent border-none outline-none"
+                    placeholder="Tên khoản chi"
+                  />
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-white font-bold text-sm">¥{(exp.amount || 0).toLocaleString()}</span>
+                  <span className="badge text-white-60">{exp.paymentDay === '27' ? '27' : '6'}</span>
+                  <button
+                    onClick={() => onDelete(exp.id)}
+                    className="text-red-400 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer p-1"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-white-10 grid grid-cols-2 gap-2">
+            <div className="mt-2 pt-2 grid grid-cols-2 gap-2">
               <div>
                 <div className="text-white-50 text-xs mb-1">Số tiền</div>
                 <input
