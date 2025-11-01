@@ -1,4 +1,5 @@
-import { Repeat, Plus, Trash2 } from 'lucide-react';
+import { Repeat, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 import type { RecurringExpense } from '../types';
 
 interface RecurringExpensesProps {
@@ -9,6 +10,8 @@ interface RecurringExpensesProps {
 }
 
 const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }: RecurringExpensesProps) => {
+  const [expandedExpense, setExpandedExpense] = useState<number | null>(null);
+
   return (
     <div className="glass rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
@@ -26,13 +29,20 @@ const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }: RecurringExp
       <div className="space-y-2">
         {expenses.map((exp, index) => (
           <div key={exp.id} className={`rounded-lg p-3 ${index % 2 === 0 ? 'bg-gradient-to-r from-blue-500/30 to-purple-500/30' : 'bg-gradient-to-r from-pink-500/30 to-orange-500/30'}`}>
-            <div className="pb-2 border-b border-white-10">
+            <div 
+              className="pb-2 border-b border-white-10 cursor-pointer"
+              onClick={() => setExpandedExpense(expandedExpense === exp.id ? null : exp.id)}
+            >
               <div className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                   <input
                     type="text"
                     value={exp.name}
-                    onChange={(e) => onUpdate(exp.id, 'name', e.target.value)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      onUpdate(exp.id, 'name', e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-full text-white font-semibold text-sm bg-transparent border-none outline-none"
                     placeholder="Tên khoản chi"
                   />
@@ -41,37 +51,48 @@ const RecurringExpenses = ({ expenses, onUpdate, onDelete, onAdd }: RecurringExp
                   <span className="text-white font-bold text-sm">¥{(exp.amount || 0).toLocaleString()}</span>
                   <span className="badge text-white-60">{exp.paymentDay === '27' ? '27' : '6'}</span>
                   <button
-                    onClick={() => onDelete(exp.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(exp.id);
+                    }}
                     className="text-red-400 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer p-1"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
+                  {expandedExpense === exp.id ? (
+                    <ChevronUp className="w-4 h-4 text-white-70" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-white-70" />
+                  )}
                 </div>
               </div>
             </div>
-            <div className="mt-2 pt-2 grid grid-cols-2 gap-2">
-              <div>
-                <div className="text-white-50 text-xs mb-1">Số tiền</div>
-                <input
-                  type="number"
-                  value={exp.amount || 0}
-                  onChange={(e) => onUpdate(exp.id, 'amount', parseFloat(e.target.value) || 0)}
-                  className="w-full bg-white-10 text-white text-left px-2 py-1 rounded-lg text-sm border-none outline-none"
-                  placeholder="0"
-                />
+            
+            {expandedExpense === exp.id && (
+              <div className="mt-2 pt-2 grid grid-cols-2 gap-2">
+                <div>
+                  <div className="text-white-50 text-xs mb-1">Số tiền</div>
+                  <input
+                    type="number"
+                    value={exp.amount || 0}
+                    onChange={(e) => onUpdate(exp.id, 'amount', parseFloat(e.target.value) || 0)}
+                    className="w-full bg-white-10 text-white text-left px-2 py-1 rounded-lg text-sm border-none outline-none"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <div className="text-white-50 text-xs mb-1">Ngày đóng</div>
+                  <select
+                    value={exp.paymentDay}
+                    onChange={(e) => onUpdate(exp.id, 'paymentDay', e.target.value)}
+                    className="w-full bg-white-10 text-white px-2 py-1 rounded-lg text-sm border-none outline-none"
+                  >
+                    <option value="27">27</option>
+                    <option value="6">6</option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <div className="text-white-50 text-xs mb-1">Ngày đóng</div>
-                <select
-                  value={exp.paymentDay}
-                  onChange={(e) => onUpdate(exp.id, 'paymentDay', e.target.value)}
-                  className="w-full bg-white-10 text-white px-2 py-1 rounded-lg text-sm border-none outline-none"
-                >
-                  <option value="27">27</option>
-                  <option value="6">6</option>
-                </select>
-              </div>
-            </div>
+            )}
           </div>
         ))}
       </div>
